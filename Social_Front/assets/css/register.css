@@ -1,0 +1,42 @@
+
+/* Añadimos estilos específicos para los campos de entrada */
+.input-field {
+  width: 100%;
+  padding: 15px;
+  background-color: #243447; /* Fondo de campos: azul grisáceo medio */
+  border: 1px solid #3A4A5C; /* Bordes: gris azulado medio */
+  border-radius: 10px;
+  color: #FFFFFF; /* Texto principal: blanco */
+  font-size: 16px;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #4D8CD9; /* Enlaces y elementos interactivos: azul claro */
+}
+
+input[type="email"] {
+  width: 100%;
+  padding: 15px;
+  background-color: #243447; /* Fondo de campos: azul grisáceo medio */
+  border: 1px solid #3A4A5C; /* Bordes: gris azulado medio */
+  border-radius: 10px;
+  color: #FFFFFF; /* Texto principal: blanco */
+  font-size: 16px;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+input[type="email"]:focus {
+  outline: none;
+  border-color: #4D8CD9; /* Enlaces y elementos interactivos: azul claro */
+}
+
+.error-message {
+  color: #ff4d4d;
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 14px;
+}
