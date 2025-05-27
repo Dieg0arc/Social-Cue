@@ -1,58 +1,82 @@
-<!-- components/auth/AuthButton.vue -->
-<!-- 
-  AuthButton - Componente botón para acciones de autenticación
-  
-  Este componente renderiza un botón personalizado para acciones de autenticación
-  con estados de carga y deshabilitado. Cambia dinámicamente su texto según 
-  el estado actual y mantiene un estilo consistente con los demás elementos
-  de autenticación.
--->
-
 <template>
-  <button 
-    :type="type as 'button' | 'submit' | 'reset'" 
-    class="auth-button" 
-    :disabled="loading || disabled"
+  <button
+    class="login-button"
+    :type="type"
+    :disabled="loading"
   >
-    <span v-if="loading">{{ loadingText }}</span>
-    <span v-else>{{ defaultText }}</span>
+    <span v-if="loading" class="loading-text">
+      <span class="loading-indicator"></span>
+      Cargando...
+    </span>
+    <span v-else>{{ text }}</span>
   </button>
 </template>
 
 <script setup lang="ts">
 /**
- * Propiedades del componente AuthButton
+ * AuthButton - Botón para acciones de autenticación
  * 
- * @prop {('button'|'submit'|'reset')} type - Tipo de botón HTML, por defecto 'button'
- * @prop {Boolean} loading - Indica si el botón está en estado de carga
- * @prop {Boolean} disabled - Indica si el botón está deshabilitado
- * @prop {String} loadingText - Texto a mostrar cuando loading=true, por defecto 'Cargando...'
- * @prop {String} defaultText - Texto principal del botón (requerido)
+ * Componente reutilizable para acciones de autenticación como login y registro.
+ * Incluye estados de carga y estilos consistentes con el diseño de la aplicación.
  */
-defineProps({
-  type: {
-    type: String as () => 'button' | 'submit' | 'reset',
-    default: 'button'
-  },
-  loading: {
-    type: Boolean,
-    default: false
-  },
-  disabled: {
-    type: Boolean,
-    default: false
-  },
-  loadingText: {
-    type: String,
-    default: 'Cargando...'
-  },
-  defaultText: {
-    type: String,
-    required: true
-  }
-});
+
+defineProps<{
+  loading: boolean;
+  text: string;
+  type?: 'submit' | 'button';
+}>();
 </script>
-<style>
-/* Importa los estilos específicos para componentes de autenticación */
-@import '~/assets/css/auth.css';
+
+<style scoped>
+/* Estilo base del botón de acción */
+.login-button {
+  width: 100%;
+  padding: 14px;
+  background-color: #0056A6; /* Color primario: azul institucional */
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-align: center;
+  position: relative;
+}
+
+/* Estado hover del botón */
+.login-button:hover {
+  background-color: #4D8CD9; /* Color primario hover: azul más brillante */
+}
+
+/* Estado deshabilitado del botón */
+.login-button:disabled {
+  background-color: #4D8CD9; /* Versión más oscura cuando desactivado */
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Contenedor del texto de carga */
+.loading-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Animación del indicador de carga */
+.loading-indicator {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+/* Keyframes para la animación de giro */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 </style>

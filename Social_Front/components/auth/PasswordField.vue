@@ -27,9 +27,8 @@
           tabindex="-1"
           aria-label="Toggle password visibility"
         >
-          <img 
-            :src="showPassword ? eyeHideIcon : eyeViewIcon" 
-            :alt="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+          <Icon
+            :name="showPassword ? 'mdi:eye-off' : 'mdi:eye'"
             class="eye-icon"
           />
         </button>
@@ -41,12 +40,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-/**
- * Importación de iconos para el toggle de visibilidad
- * Nota: Ajustar las rutas según la estructura del proyecto
- */
-import eyeViewIcon from '@/assets/images/Eye_view.png';
-import eyeHideIcon from '@/assets/images/Eye_hide.png';
+// Usamos Nuxt Icon en lugar de importar imágenes para los iconos
 
 /**
  * Props del componente
@@ -169,6 +163,7 @@ const showPassword = ref(false);
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #8A97A8; /* Color para el icono */
 }
 
 /* Icono del botón de visibilidad */

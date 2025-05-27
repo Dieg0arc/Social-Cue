@@ -1,357 +1,371 @@
 /* Base container and background shapes */
 .login-container {
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  justify-content: center;
-  align-items: center;
-  background-color: #0A1625; /* Fondo principal: azul muy oscuro */
-  color: #FFFFFF; /* Texto principal: blanco */
+display: flex;
+width: 100vw;
+height: 100vh;
+justify-content: center;
+align-items: center;
+background-color: #0A1625; /* Fondo principal: azul muy oscuro */
+color: #FFFFFF; /* Texto principal: blanco */
+position: relative;
+overflow: hidden;
+}
+
+.background-shapes {
+position: absolute;
+background-color: #0A1625; /* Ligeramente más oscuro que el fondo principal */
+width: 100%;
+height: 100%;
+overflow: hidden;
+z-index: 0;
+}
+
+.shape {
+position: absolute;
+}
+
+/* Login card and structural elements */
+.login-card {
+width: 90%;
+max-width: 1100px;
+background-color: #0A1625; /* Fondo secundario: gris azulado oscuro */
+border-radius: 20px;
+/* box-shadow: 0 8px 30px rgba(0, 86, 166, 0.4); Sombra con azul institucional */
+overflow: visible;
+z-index: 1;
+display: flex;
+flex-direction: column;
+padding: 30px 0;
+}
+
+.card-header {
+width: 100%;
+text-align: center;
+padding-bottom: 20px;
+}
+
+.card-content {
+display: flex;
+flex-direction: row;
+width: 100%;
+box-sizing: border-box;
+justify-content: space-between;
+align-items: center;
+}
+
+.card-left {
+flex: 1;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 0 20px;
+}
+
+.card-right {
+flex: 1;
+padding: 0 40px;
+display: flex;
+flex-direction: column;
+}
+
+/* Title and branding elements */
+.title-wrapper {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 15px;
+}
+
+.title-logo {
+height: 60px;
+width: auto;
+object-fit: contain;
+}
+
+.app-title {
+font-size: 2.8rem;
+color: #FFFFFF; /* Texto principal: blanco */
+margin: 0;
+font-weight: 600;
+}
+
+.app-subtitle {
+color: #D0D0D0; /* Texto secundario: gris claro */
+margin: 5px 0 20px;
+font-size: 1.2rem;
+}
+
+.login-image {
+max-width: 100%;
+max-height: 400px;
+object-fit: contain;
+}
+
+/* Form elements */
+.form-group {
+margin-bottom: 20px;
+width: 100%;
+}
+
+label {
+display: block;
+margin-bottom: 8px;
+font-size: 16px;
+color: #D0D0D0; /* Texto secundario: gris claro */
+}
+
+input[type="email"],
+input[type="text"],
+input[type="password"] {
+width: 100%;
+padding: 15px;
+background-color: #162A42; /* Fondo de campos: azul grisáceo medio */
+border: 1px solid #3A4A5C; /* Bordes: gris azulado medio */
+border-radius: 10px;
+color: #FFFFFF; /* Texto principal: blanco */
+font-size: 16px;
+transition: border-color 0.2s;
+box-sizing: border-box;
+}
+
+input[type="email"]:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input:focus {
+outline: none;
+border-color: #4D8CD9; /* Enlaces y elementos interactivos: azul claro */
+}
+
+.password-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 8px;
+width: 100%;
+}
+
+.forgot-link {
+color: #4D8CD9; /* Enlaces: azul claro */
+font-size: 14px;
+text-decoration: none;
+transition: color 0.2s;
+}
+
+.forgot-link:hover {
+color: #5F9AE5; /* Ligeramente más claro al hover */
+text-decoration: underline;
+}
+
+.remember-container {
+display: flex;
+align-items: center;
+margin-bottom: 20px;
+width: 100%;
+}
+
+.remember-label {
+display: flex;
+align-items: center;
+cursor: pointer;
+font-size: 14px;
+color: #D0D0D0; /* Texto secundario: gris claro */
+}
+
+.remember-label input {
+margin-right: 8px;
+width: 16px;
+height: 16px;
+}
+
+.login-button {
+width: 100%;
+padding: 14px;
+background-color: #0056A6; /* Color primario: azul institucional */
+color: white;
+border: none;
+border-radius: 25px;
+font-weight: 600;
+font-size: 16px;
+cursor: pointer;
+transition: background-color 0.2s;
+text-align: center;
+}
+
+.login-button:hover {
+background-color: #4D8CD9; /* Color primario hover: azul más brillante */
+}
+
+.login-button:disabled {
+background-color: #4D8CD9; /* Versión más oscura cuando desactivado */
+opacity: 0.7;
+cursor: not-allowed;
+}
+
+/* Social login section */
+.divider {
+display: flex;
+align-items: center;
+margin: 25px 0;
+color: #A0A0A0; /* Texto terciario: gris medio */
+font-size: 14px;
+width: 100%;
+}
+
+.divider::before,
+.divider::after {
+content: "";
+flex: 1;
+height: 1px;
+background-color: #3A4A5C; /* Bordes y divisores: gris azulado medio */
+margin: 0 15px;
+}
+
+.social-login {
+display: flex;
+justify-content: center;
+width: 100%;
+margin-bottom: 20px;
+}
+
+.social-btn {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 10px;
+padding: 12px 0;
+width: 60%;
+max-width: 300px;
+
+border: none;
+border-radius: 25px;
+color: #fff;
+font-size: 16px;
+cursor: pointer;
+transition: all 0.2s ease;
+}
+
+
+
+.password-input-wrapper {
   position: relative;
-  overflow: hidden;
- }
- 
- .background-shapes {
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  flex: 1;
+  padding-right: 40px;
+}
+
+.eye-icon {
   position: absolute;
-  background-color: #0A1625; /* Ligeramente más oscuro que el fondo principal */
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  z-index: 0;
- }
- 
- .shape {
-  position: absolute;
- }
- 
- /* Login card and structural elements */
- .login-card {
-  width: 90%;
-  max-width: 1100px;
-  background-color: #0A1625; /* Fondo secundario: gris azulado oscuro */
-  border-radius: 20px;
-  /* box-shadow: 0 8px 30px rgba(0, 86, 166, 0.4); Sombra con azul institucional */
-  overflow: visible;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 30px 0;
- }
- 
- .card-header {
-  width: 100%;
-  text-align: center;
-  padding-bottom: 20px;
- }
- 
- .card-content {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  box-sizing: border-box;
-  justify-content: space-between;
-  align-items: center;
- }
- 
- .card-left {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0 20px;
- }
- 
- .card-right {
-  flex: 1;
-  padding: 0 40px;
-  display: flex;
-  flex-direction: column;
- }
- 
- /* Title and branding elements */
- .title-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
- }
- 
- .title-logo {
-  height: 60px;
-  width: auto;
-  object-fit: contain;
- }
- 
- .app-title {
-  font-size: 2.8rem;
-  color: #FFFFFF; /* Texto principal: blanco */
-  margin: 0;
-  font-weight: 600;
- }
- 
- .app-subtitle {
-  color: #D0D0D0; /* Texto secundario: gris claro */
-  margin: 5px 0 20px;
-  font-size: 1.2rem;
- }
- 
- .login-image {
-  max-width: 100%;
-  max-height: 400px;
-  object-fit: contain;
- }
- 
- /* Form elements */
- .form-group {
-  margin-bottom: 20px;
-  width: 100%;
- }
- 
- label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 16px;
-  color: #D0D0D0; /* Texto secundario: gris claro */
- }
- 
- input[type="text"],
- input[type="password"] {
-  width: 100%;
-  padding: 15px;
-  background-color: #243447; /* Fondo de campos: azul grisáceo medio */
-  border: 1px solid #3A4A5C; /* Bordes: gris azulado medio */
-  border-radius: 10px;
-  color: #FFFFFF; /* Texto principal: blanco */
-  font-size: 16px;
-  transition: border-color 0.2s;
-  box-sizing: border-box;
- }
- 
- input:focus {
-  outline: none;
-  border-color: #4D8CD9; /* Enlaces y elementos interactivos: azul claro */
- }
- 
- .password-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-  width: 100%;
- }
- 
- .forgot-link {
-  color: #4D8CD9; /* Enlaces: azul claro */
-  font-size: 14px;
-  text-decoration: none;
-  transition: color 0.2s;
- }
- 
- .forgot-link:hover {
-  color: #5F9AE5; /* Ligeramente más claro al hover */
-  text-decoration: underline;
- }
- 
- .remember-container {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  width: 100%;
- }
- 
- .remember-label {
-  display: flex;
-  align-items: center;
+  right: 20px;
+  font-size: 1.6rem;
+  color: #666;
   cursor: pointer;
-  font-size: 14px;
-  color: #D0D0D0; /* Texto secundario: gris claro */
- }
- 
- .remember-label input {
-  margin-right: 8px;
-  width: 16px;
-  height: 16px;
- }
- 
- .login-button {
-  width: 100%;
-  padding: 14px;
-  background-color: #0056A6; /* Color primario: azul institucional */
-  color: white;
-  border: none;
-  border-radius: 25px;
-  font-weight: 600;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  text-align: center;
- }
- 
- .login-button:hover {
-  background-color: #4D8CD9; /* Color primario hover: azul más brillante */
- }
- 
- .login-button:disabled {
-  background-color: #4D8CD9; /* Versión más oscura cuando desactivado */
-  opacity: 0.7;
-  cursor: not-allowed;
- }
- 
- /* Social login section */
- .divider {
-  display: flex;
-  align-items: center;
-  margin: 25px 0;
-  color: #A0A0A0; /* Texto terciario: gris medio */
-  font-size: 14px;
-  width: 100%;
- }
- 
- .divider::before, 
- .divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background-color: #3A4A5C; /* Bordes y divisores: gris azulado medio */
-  margin: 0 15px;
- }
- 
- .social-login {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  margin-bottom: 20px;
- }
- 
- .social-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 12px 0;
-  width: 60%;
-  max-width: 300px;
-  background-color: #00A651; /* Color de acento 1: verde institucional */
-  border: none;
-  border-radius: 25px;
-  color: #fff;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
- }
- 
- .social-btn:hover {
-  background-color: #00BF5F; /* Color de acento 1 hover: verde más brillante */
- }
- 
- .google-btn {
-  background-color: #FF7D1A; /* Color de acento 2: naranja brillante */
- }
- 
- .facebook-btn {
-  background-color: #0056A6; /* Color primario: azul institucional */
- }
- 
- .icon {
-  font-weight: bold;
-  font-size: 16px;
- }
- 
- /* Register prompt */
- .register-prompt {
-  margin-top: 20px;
-  text-align: center;
-  font-size: 14px;
-  color: #D0D0D0; /* Texto secundario: gris claro */
-  width: 100%;
- }
- 
- .register-link {
-  color: #4D8CD9; /* Enlaces: azul claro */
-  text-decoration: none;
-  font-weight: 600;
- }
- 
- .register-link:hover {
-  text-decoration: underline;
- }
- 
- /* Responsive styles */
- @media (max-width: 992px) {
-  .card-content {
-    flex-direction: row;
-  }
-  
-  .card-right {
-    padding: 0 30px;
-  }
- }
- 
- @media (max-width: 768px) {
-  .login-card {
-    padding: 20px 0;
-  }
-  
-  .card-content {
-    flex-direction: column;
-  }
-  
-  .card-left {
-    display: none; /* Oculta la imagen en dispositivos móviles */
-  }
-  
-  .card-right {
-    padding: 0 30px;
-    width: 90%;
-    max-width: 450px;
-  }
-  
-  .card-header {
-    padding-bottom: 10px;
-  }
-  
-  .app-title {
-    font-size: 2.5rem;
-  }
-  
-  .social-btn {
-    width: 80%;
-  }
- }
- 
- @media (max-width: 480px) {
-  .login-card {
-    width: 95%;
-    padding: 15px 0;
-  }
-  
-  .app-title {
-    font-size: 2.2rem;
-  }
-  
-  .title-logo {
-    height: 50px;
-  }
-  
-  .card-right {
-    padding: 0 20px;
-    width: 100%;
-  }
-  
-  input[type="text"],
-  input[type="password"] {
-    padding: 12px;
-    font-size: 15px;
-  }
-  
-  .login-button {
-    padding: 12px;
-    font-size: 15px;
-  }
-  
-  .social-btn {
-    padding: 12px 15px;
-    font-size: 14px;
-    width: 90%;
-  }
- }
+}
+
+
+.icon {
+font-weight: bold;
+font-size: 16px;
+}
+
+/* Register prompt */
+.register-prompt {
+margin-top: 20px;
+text-align: center;
+font-size: 14px;
+color: #D0D0D0; /* Texto secundario: gris claro */
+width: 100%;
+}
+
+.register-link {
+color: #4D8CD9; /* Enlaces: azul claro */
+text-decoration: none;
+font-weight: 600;
+}
+
+.register-link:hover {
+text-decoration: underline;
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+.card-content {
+flex-direction: row;
+}
+
+.card-right {
+padding: 0 30px;
+}
+}
+
+@media (max-width: 768px) {
+.login-card {
+padding: 20px 0;
+}
+
+.card-content {
+flex-direction: column;
+}
+
+.card-left {
+display: none; /* Oculta la imagen en dispositivos móviles */
+}
+
+.card-right {
+padding: 0 30px;
+width: 90%;
+max-width: 450px;
+}
+
+.card-header {
+padding-bottom: 10px;
+}
+
+.app-title {
+font-size: 2.5rem;
+}
+
+.social-btn {
+width: 80%;
+}
+}
+
+@media (max-width: 480px) {
+.login-card {
+width: 95%;
+padding: 15px 0;
+}
+
+.app-title {
+font-size: 2.2rem;
+}
+
+.title-logo {
+height: 50px;
+}
+
+.card-right {
+padding: 0 20px;
+width: 100%;
+}
+
+input[type="text"],
+input[type="password"] {
+padding: 12px;
+font-size: 15px;
+}
+
+.login-button {
+padding: 12px;
+font-size: 15px;
+}
+
+.social-btn {
+padding: 12px 15px;
+font-size: 14px;
+width: 90%;
+}
+}
