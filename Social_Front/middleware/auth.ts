@@ -7,7 +7,6 @@
  * y a los usuarios autenticados al dashboard cuando intentan acceder a páginas de
  * autenticación como login o registro.
  */
-
 import { defineNuxtRouteMiddleware, navigateTo } from "#app";
 import { useAuthStore } from "~/stores/auth";
 

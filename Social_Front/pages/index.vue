@@ -1,116 +1,109 @@
 <template>
-  <!-- Contenedor principal que abarca toda la página de inicio -->
-  <div class="home-page">
-    <!-- Contenedor responsivo con margen automático y espaciado interno -->
-    <div class="container mx-auto px-4 py-12">
-      <!-- Título principal de la plataforma -->
-      <h1 class="text-3xl font-bold mb-6">Red Social del Conocimiento Humboldt</h1>
-      
-      <!-- Sección visible solo para usuarios autenticados -->
-      <div v-if="isAuthenticated">
-        <!-- Mensaje de bienvenida personalizado con el nombre del usuario -->
-        <p class="mb-4">Bienvenido, {{ user?.fullName || 'Usuario' }}!</p>
-        
-        <!-- Cuadrícula de características principales (1 columna en móvil, 3 en escritorio) -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          <!-- Tarjeta de característica: Explorar recursos -->
-          <div class="feature-card">
-            <h2 class="text-xl font-semibold mb-2">Explorar Recursos</h2>
-            <p>Descubre tutoriales, videos y materiales compartidos por la comunidad universitaria.</p>
-            <button class="btn-primary mt-4">Explorar</button>
-          </div>
-          
-          <!-- Tarjeta de característica: Compartir conocimiento -->
-          <div class="feature-card">
-            <h2 class="text-xl font-semibold mb-2">Compartir Conocimiento</h2>
-            <p>Comparte tus propios recursos con otros estudiantes y profesores.</p>
-            <button class="btn-primary mt-4">Publicar</button>
-          </div>
-          
-          <!-- Tarjeta de característica: Eventos académicos -->
-          <div class="feature-card">
-            <h2 class="text-xl font-semibold mb-2">Eventos Académicos</h2>
-            <p>Descubre y participa en eventos organizados por la comunidad.</p>
-            <button class="btn-primary mt-4">Ver Eventos</button>
-          </div>
-        </div>
+  <div class="login-container">
+    <div class="login-card home-card">
+      <div class="card-header">
+        <h1 class="app-title">Social-Cue</h1>
+        <p class="app-subtitle">La red social del conocimiento</p>
       </div>
-      
-      <!-- Sección visible para usuarios no autenticados -->
-      <div v-else class="text-center">
-        <!-- Descripción breve de la plataforma -->
-        <p class="mb-6">Comparte y descubre conocimiento en la comunidad Alexander Von Humboldt</p>
-        
-        <!-- Botones de acceso y registro -->
-        <div class="flex justify-center gap-4">
-          <!-- Enlace para iniciar sesión usando componente NuxtLink -->
-          <NuxtLink to="/login" class="btn-primary">Iniciar Sesión</NuxtLink>
-          
-          <!-- Enlace para registrarse usando componente NuxtLink -->
-          <NuxtLink to="/register" class="btn-secondary">Registrarse</NuxtLink>
+      <div class="card-content home-content">
+        <div class="card-right home-content-center">
+          <NuxtLink to="http://localhost:3000/login" class="login-button home-login-button">
+            Iniciar sesión
+          </NuxtLink>
+          <p class="home-description">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque nec est at libero ultrices suscipit.
+          </p>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-/**
- * Script de configuración para la página principal
- * 
- * Usa composition API de Vue con TypeScript para gestionar
- * el estado de autenticación de los usuarios.
- */
-
-// Importación del composable de autenticación personalizado
-import { useAuth } from '~/composables/useAuth';
-
-// Desestructuración para obtener el usuario actual y su estado de autenticación
-const { user, isAuthenticated } = useAuth();
+<script setup>
+// No requiere lógica adicional
 </script>
 
 <style scoped>
-/**
- * Estilos específicos para la página principal
- * Los estilos están encapsulados con 'scoped' para evitar afectar otros componentes
- */
-
-/* Establece altura mínima para la página principal */
-.home-page {
-  min-height: 80vh;
+/* Reutilizando tu sistema de diseño */
+.login-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  background-color: #0A1625;
+  color: #FFFFFF;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Estilo para las tarjetas de características */
-.feature-card {
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  background-color: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+.login-card.home-card {
+  width: 90%;
+  max-width: 600px;
+  background-color: #0A1625;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 30px;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 30px rgba(0, 86, 166, 0.4);
 }
 
-/* Efecto hover para las tarjetas de características */
-.feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+.card-header {
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-/* Estilo para el botón secundario */
-.btn-secondary {
-  background-color: white;
-  color: var(--primary-color);
-  border: 1px solid var(--primary-color);
-  padding: 0.75rem 1rem;
-  border-radius: 0.25rem;
-  font-weight: bold;
+.app-title {
+  font-size: 2.5rem;
+  color: #FFFFFF;
+  margin: 0;
+  font-weight: 600;
+}
+
+.app-subtitle {
+  color: #D0D0D0;
+  font-size: 1.2rem;
+  margin-top: 10px;
+}
+
+.card-content.home-content {
+  justify-content: center;
+}
+
+.card-right.home-content-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.login-button.home-login-button {
+  width: 100%;
+  max-width: 300px;
+  padding: 16px;
+  background-color: #0056A6;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 18px;
   cursor: pointer;
   transition: background-color 0.2s;
+  text-align: center;
+  margin-bottom: 24px;
 }
 
-/* Efecto hover para el botón secundario */
-.btn-secondary:hover {
-  background-color: #f3f4f6;
+.login-button.home-login-button:hover {
+  background-color: #4D8CD9;
 }
 
-/* Nota: El estilo .btn-primary se asume que está definido globalmente */
+.home-description {
+  text-align: center;
+  max-width: 450px;
+  color: #D0D0D0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
 </style>

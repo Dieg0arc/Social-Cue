@@ -1,3 +1,22 @@
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  username: string;
+  role: string;
+  createdAt: string;
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterData extends LoginCredentials {
+  name: string;
+  username: string;
+}
+
 // types/user.ts
 /**
  * Archivo: user.ts

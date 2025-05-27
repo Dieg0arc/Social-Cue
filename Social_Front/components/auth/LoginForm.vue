@@ -42,13 +42,13 @@
     </div>
     
     <!-- Botón de envío del formulario con estado de carga -->
-    <AuthButton 
-      type="submit" 
-      :loading="loading" 
-      loadingText="Iniciando sesión..." 
-      defaultText="Iniciar sesión"
-    />
-  </form>
+<AuthButton
+  type="submit"
+  :loading="loading"
+  text="Iniciar sesión"
+/>
+  </form>      
+  <!-- loadingText="Iniciando sesión..."  -->
 </template>
 
 <script setup lang="ts">
@@ -57,6 +57,7 @@ import { useAuth } from '~/composables/useAuth';
 import PasswordField from '~/components/auth/PasswordField.vue';
 import RememberMe from '~/components/auth/RememberMe.vue';
 import AuthButton from '~/components/auth/AuthButton.vue';
+import type { LoginCredentials } from '~/types/user';
 
 /**
  * Obtiene las funcionalidades de autenticación del composable useAuth
@@ -100,15 +101,33 @@ const emit = defineEmits<{
  * - Emite evento de éxito o error según el resultado
  */
 const handleSubmit = async () => {
+  // Creamos un objeto de credenciales tipado con LoginCredentials
+  const credentials: LoginCredentials = {
+    email: form.value.email,
+    password: form.value.password
+  };
+  
   emit('login-attempt', form.value);
   
   try {
-    await login({
-      email: form.value.email,
-      password: form.value.password
-    });
-    emit('login-success');
+    // Llamamos a la función login con las credenciales tipadas
+    const success = await login(credentials);
+    
+    if (success) {
+      // Solo emitir el evento de éxito si el login fue exitoso
+      emit('login-success');
+    } else {
+      // Si login devuelve falso, determinamos el tipo de error basado en el error del store
+      if (error.value && error.value.includes('autenticación')) {
+        emit('login-error', new Error('Credenciales inválidas'));
+      } else if (error.value && error.value.includes('conexión')) {
+        emit('login-error', new Error('Error de conexión. Verifica tu internet e inténtalo de nuevo.'));
+      } else {
+        emit('login-error', new Error(error.value || 'Error desconocido durante el inicio de sesión'));
+      }
+    }
   } catch (e) {
+    console.error('Error durante el login:', e);
     emit('login-error', e);
   }
 };

@@ -1,44 +1,64 @@
+import tsconfigPaths from "vite-tsconfig-paths";
+
 export default defineNuxtConfig({
   modules: [
-    "@nuxt/image",
     "@nuxt/ui",
-    "@primevue/nuxt-module",
     "@nuxtjs/tailwindcss",
-    "@pinia/nuxt",
   ],
 
-  primevue: {
-    components: {
-      include: ["Button", "InputText", "Card", "Message", "Toast"]
+  tailwindcss: {
+    config: {
+      content: [
+        './components/**/*.{vue,js,ts}',
+        './layouts/**/*.vue',
+        './pages/**/*.vue',
+        './plugins/**/*.{js,ts}',
+        './app.vue',
+        './assets/**/*.css'
+      ],
+      theme: {
+        extend: {},
+      },
+      plugins: [],
     },
-    directives: {
-      include: ["ripple"]
-    },
-    options: {
-      ripple: true
-    }
   },
 
-  css: ["~/assets/css/main.css"],
-
-  routeRules: {
-    "/": { redirect: "/login" },
+  app: {
+    head: {
+      title: "SocialCue",
+    },
   },
 
-  typescript: {
-    strict: true,
-    typeCheck: true,
-    shim: false,
+css: [
+  'primeicons/primeicons.css',
+  "~/assets/css/main.css",
+  "~/assets/css/auth.css",
+  "~/assets/css/register.css",
+],
+ 
+
+  logLevel: "silent",
+
+  telemetry: false,
+
+  runtimeConfig: {
+    public: {
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE || "http://localhost:3000/api",
+    },
   },
 
   nitro: {
-    compressPublicAssets: true,
-    compatibilityDate: "2025-05-01",
+    devProxy: {
+      "/api": {
+        target: "http://localhost:3000/api",
+        changeOrigin: true,
+        prependPath: false,
+      },
+    },
+    compatibilityDate: "2025-05-26",
   },
 
-  imports: {
-    dirs: ["composables", "stores"],
+  vite: {
+    plugins: [tsconfigPaths()],
   },
-
-  compatibilityDate: "2025-05-01",
 });
