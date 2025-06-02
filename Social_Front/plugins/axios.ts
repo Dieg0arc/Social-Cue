@@ -1,31 +1,42 @@
-// plugins/axios.ts
-import axios from "axios";
-
 export default defineNuxtPlugin((nuxtApp) => {
-  const config = useRuntimeConfig() as { public: { apiBase: string } };
+  const config = useRuntimeConfig();
 
-  const api = axios.create({
-    baseURL: config.public.apiBase, // se leerá desde .env
-    timeout: 10000,
+  const api = $fetch.create({
+    baseURL: config.public.apiBaseUrl as string,
+    headers: {
+      accept: "application/json",
+    },
+    onRequest({ options }) {
+      const token = useCookie("token").value;
+
+      // Convertimos a Headers si no lo es
+      let headers: Headers;
+      if (options.headers instanceof Headers) {
+        headers = options.headers;
+      } else {
+        headers = new Headers(options.headers as HeadersInit);
+      }
+
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+
+      options.headers = headers;
+    },
+    onResponse({ response }) {
+      console.log("[API Response]", response._data);
+    },
+    onRequestError({ error }) {
+      console.error("[API Request Error]", error);
+    },
+    onResponseError({ response }) {
+      console.error("[API Response Error]", response.status, response._data);
+    },
   });
-
-  // Puedes agregar interceptores aquí si deseas
-  // api.interceptors.request.use(config => {
-  //   // Agregar headers por ejemplo
-  //   return config
-  // })
-
-  // api.interceptors.response.use(
-  //   response => response,
-  //   error => {
-  //     // Manejo global de errores
-  //     return Promise.reject(error)
-  //   }
-  // )
 
   return {
     provide: {
-      axios: api,
+      api,
     },
   };
 });
