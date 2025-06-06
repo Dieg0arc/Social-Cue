@@ -1,20 +1,24 @@
 package main
 
 import (
-	"log"
+        "log"
 
-	"authservice/config"
-	"authservice/routes"
+        "authservice/config"
+        "authservice/realtime"
+        "authservice/routes"
 
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+        "github.com/labstack/echo/v4"
+        "github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
-	cfg := config.GetConfig()
-	config.InitMongo(cfg)
+        cfg := config.GetConfig()
+        config.InitMongo(cfg)
 
-	e := echo.New()
+        hub := realtime.NewHub()
+        go hub.Run()
+
+        e := echo.New()
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -24,7 +28,7 @@ func main() {
 		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
 	}))
 
-	routes.SetupRoutes(e, cfg) // ✅ PASA cfg AQUÍ
+        routes.SetupRoutes(e, cfg, hub)
 
 	log.Fatal(e.Start(":8080"))
 }

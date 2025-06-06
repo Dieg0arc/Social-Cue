@@ -4,6 +4,7 @@ go 1.24.2
 
 require (
 	github.com/golang-jwt/jwt/v4 v4.5.2
+	github.com/gorilla/websocket v1.5.0
 	github.com/labstack/echo/v4 v4.13.3
 	go.mongodb.org/mongo-driver v1.13.1
 	golang.org/x/crypto v0.37.0
