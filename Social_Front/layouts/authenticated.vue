@@ -26,6 +26,7 @@
           </li>
           <li class="nav-item" :class="{ active: route.path.includes('/profile') }">
             <NuxtLink to="/profile" class="nav-link">
+
               <i class="pi pi-user nav-icon"></i>
               <span v-if="!sidebarCollapsed" class="nav-text">Perfil</span>
             </NuxtLink>
