@@ -2,7 +2,6 @@ package utils
 
 import (
 	"crypto/rand"
-	"fmt"
 )
 
 // GenerateRandomCode genera un código numérico aleatorio de seis dígitos.
@@ -15,5 +14,5 @@ func GenerateRandomCode() (string, error) {
 	for i := range b {
 		b[i] = digits[int(b[i])%len(digits)]
 	}
-	return fmt.Sprintf("%s", b), nil
+	return string(b), nil
 }
