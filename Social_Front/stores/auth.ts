@@ -144,6 +144,46 @@ export const useAuthStore = defineStore("auth", {
       await navigateTo("/login");
     },
 
+    async requestPasswordReset(email: string): Promise<boolean> {
+      this.loading = true;
+      try {
+        const nuxtApp = useNuxtApp();
+        const $api = nuxtApp.$api as typeof $fetch;
+        await $api("/auth/password-reset/request", {
+          method: "POST",
+          body: { email },
+        });
+        return true;
+      } catch (error) {
+        console.error("Error solicitando reset:", error);
+        return false;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async confirmPasswordReset(
+      email: string,
+      code: string,
+      newPassword: string
+    ): Promise<boolean> {
+      this.loading = true;
+      try {
+        const nuxtApp = useNuxtApp();
+        const $api = nuxtApp.$api as typeof $fetch;
+        await $api("/auth/password-reset/confirm", {
+          method: "POST",
+          body: { email, code, new_password: newPassword },
+        });
+        return true;
+      } catch (error) {
+        console.error("Error confirmando reset:", error);
+        return false;
+      } finally {
+        this.loading = false;
+      }
+    },
+
     isTokenExpired(): boolean {
       if (!this.token) return true;
       if (isBrowser()) {
