@@ -1,11 +1,26 @@
 package utils
 
-import "log"
+import (
+	"fmt"
+	"net/smtp"
+	"os"
+)
 
-// SendResetEmail es un stub que simula el envío de un correo con el código
-// de recuperación. En un entorno real se debería implementar el envío
-// mediante un servidor SMTP o un servicio externo.
 func SendResetEmail(to, code string) error {
-	log.Printf("Enviando correo de recuperación a %s con código %s", to, code)
-	return nil
+	host := os.Getenv("SMTP_HOST")
+	port := os.Getenv("SMTP_PORT")
+	user := os.Getenv("SMTP_USER")
+	pass := os.Getenv("SMTP_PASS")
+	from := os.Getenv("SMTP_FROM")
+
+	if host == "" || port == "" || user == "" || pass == "" || from == "" {
+		return fmt.Errorf("SMTP configuration not set")
+	}
+
+	addr := fmt.Sprintf("%s:%s", host, port)
+	auth := smtp.PlainAuth("", user, pass, host)
+
+	msg := []byte(fmt.Sprintf("To: %s\r\nSubject: Recuperar contraseña\r\n\r\nTu código de recuperación es: %s\r\n", to, code))
+
+	return smtp.SendMail(addr, auth, from, []string{to}, msg)
 }

@@ -2,7 +2,13 @@ import { defineNuxtRouteMiddleware, navigateTo } from "nuxt/app";
 import { useAuthStore } from "@/stores/auth";
 import type { RouteLocationNormalized } from "vue-router";
 
-const publicRoutes = ["/", "/login", "/register"];
+const publicRoutes = [
+  "/",
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+];
 
 export default defineNuxtRouteMiddleware((to: RouteLocationNormalized) => {
   try {
