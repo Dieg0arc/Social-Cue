@@ -14,10 +14,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// SeguirUsuario crea una relación seguidor -> seguido y notifica al seguido si aplica.
+// SeguirUsuario crea una relación seguidor → seguido y notifica al seguido si aplica.
 func SeguirUsuario(c echo.Context) error {
+	// ID del usuario seguido (desde la URL)
 	seguidoIDParam := c.Param("id")
 
+	// Estructura para el JSON del cuerpo
 	var body struct {
 		SeguidorID string `json:"seguidorId"`
 	}
@@ -25,6 +27,7 @@ func SeguirUsuario(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Error al parsear el cuerpo"})
 	}
 
+	// Convertir IDs a ObjectID
 	seguidoID, err := primitive.ObjectIDFromHex(seguidoIDParam)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "ID de seguido inválido"})
@@ -33,17 +36,30 @@ func SeguirUsuario(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "ID de seguidor inválido"})
 	}
+
+	// Prevenir que se siga a sí mismo
 	if seguidoID == seguidorID {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "No puedes seguirte a ti mismo"})
 	}
 
+	// Verificar si ya existe la relación
 	collection := config.GetCollection("follows")
-	_, err = collection.InsertOne(context.TODO(), bson.M{
-		"_id":        primitive.NewObjectID(),
-		"seguidorId": seguidorID,
-		"seguidoId":  seguidoID,
-		"fecha":      time.Now(),
-	})
+	filter := bson.M{"seguidorId": seguidorID, "seguidoId": seguidoID}
+	var existente models.Follow
+	err = collection.FindOne(context.TODO(), filter).Decode(&existente)
+	if err == nil {
+		// Ya existe
+		return c.JSON(http.StatusConflict, echo.Map{"message": "Ya sigues a este usuario"})
+	}
+
+	// Registrar follow
+	newFollow := models.Follow{
+		ID:         primitive.NewObjectID(),
+		SeguidorID: seguidorID,
+		SeguidoID:  seguidoID,
+		Fecha:      time.Now(),
+	}
+	_, err = collection.InsertOne(context.TODO(), newFollow)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error al guardar follow"})
 	}
@@ -51,7 +67,7 @@ func SeguirUsuario(c echo.Context) error {
 	log.Println("Follow registrado:", seguidorID.Hex(), "->", seguidoID.Hex())
 	utils.CrearNotificacion("follow", seguidorID, seguidoID, "Empezó a seguirte", nil)
 
-	return c.JSON(http.StatusOK, echo.Map{"message": "Siguiendo al usuario"})
+	return c.JSON(http.StatusCreated, echo.Map{"message": "Ahora sigues al usuario"})
 }
 
 // DejarDeSeguir elimina la relación seguidor -> seguido
@@ -167,4 +183,42 @@ func MarcarNotificacionLeida(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{"message": "✅ Notificación marcada como leída"})
+}
+
+// EliminarNotificacion elimina una notificación específica si pertenece al usuario autenticado.
+func EliminarNotificacion(c echo.Context) error {
+	userIDParam := c.Param("id")
+	notiIDParam := c.Param("notiId")
+
+	// Convertir parámetros a ObjectID
+	userID, err := primitive.ObjectIDFromHex(userIDParam)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{"message": "ID de usuario inválido"})
+	}
+	notiID, err := primitive.ObjectIDFromHex(notiIDParam)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{"message": "ID de notificación inválido"})
+	}
+
+	// Obtener colección
+	collection := config.GetCollection("notificaciones")
+
+	// Intentar eliminar la notificación, permitiendo coincidencia por ObjectID o string
+	filter := bson.M{
+		"_id": notiID,
+		"$or": []bson.M{
+			{"para": userID},
+			{"para": userID.Hex()},
+		},
+	}
+
+	result, err := collection.DeleteOne(context.TODO(), filter)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error al eliminar la notificación"})
+	}
+	if result.DeletedCount == 0 {
+		return c.JSON(http.StatusNotFound, echo.Map{"message": "Notificación no encontrada"})
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{"message": "Notificación eliminada"})
 }

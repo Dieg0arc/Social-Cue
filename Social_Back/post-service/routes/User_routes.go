@@ -13,4 +13,6 @@ func UserRoutes(e *echo.Echo) {
 	e.GET("/users/:id/followers", controllers.VerSeguidores)
 	e.GET("/users/:id/notificaciones", controllers.VerNotificaciones)
 	e.PATCH("/users/:id/notificaciones/:notiId/leida", controllers.MarcarNotificacionLeida)
+	e.DELETE("/users/:id/notificaciones/:notiId", controllers.EliminarNotificacion)
+
 }
