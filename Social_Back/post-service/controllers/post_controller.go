@@ -126,36 +126,44 @@ func EliminarPost(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Post eliminado"})
 }
 
-// ToggleLike registra o elimina un like, y crea una notificación si aplica
+// ToggleLike registra o elimina un like sobre un post.
 func ToggleLike(c echo.Context) error {
+	// Obtener el ID del post desde la URL
 	postID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "ID del post inválido"})
 	}
 
-	var data struct {
+	// Estructura auxiliar para parsear el JSON con el usuario que da like
+	var body struct {
 		UsuarioID string `json:"usuarioId"`
 	}
-	if err := c.Bind(&data); err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Cuerpo inválido"})
+
+	// Parsear el cuerpo de la solicitud
+	if err := c.Bind(&body); err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Error al parsear el cuerpo JSON"})
 	}
 
-	userID, err := primitive.ObjectIDFromHex(data.UsuarioID)
+	// Validar el ID del usuario
+	userID, err := primitive.ObjectIDFromHex(body.UsuarioID)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "ID de usuario inválido"})
 	}
 
+	// Verificar si ya existe el like
 	collection := config.GetCollection("likes")
 	filter := bson.M{"postId": postID, "usuarioId": userID}
 
 	var existing models.Like
 	err = collection.FindOne(context.TODO(), filter).Decode(&existing)
 	if err == nil {
+		// Ya existe → quitar el like
 		_, _ = collection.DeleteOne(context.TODO(), filter)
 		log.Println("Like quitado:", userID.Hex(), "en post", postID.Hex())
 		return c.JSON(http.StatusOK, echo.Map{"message": "Like quitado"})
 	}
 
+	// Crear nuevo like
 	like := models.Like{
 		ID:        primitive.NewObjectID(),
 		PostID:    postID,
@@ -167,13 +175,21 @@ func ToggleLike(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error al dar like"})
 	}
 
+	// Obtener el post para identificar al autor
 	var post models.Post
 	err = config.GetCollection("posts").FindOne(context.TODO(), bson.M{"_id": postID}).Decode(&post)
-	if err == nil && post.AutorID != userID {
-		log.Println("Like registrado por:", userID.Hex(), "→ notificar a", post.AutorID.Hex())
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "No se pudo obtener el autor del post"})
+	}
+
+	log.Println("Autor del post:", post.AutorID.Hex())
+	log.Println("Usuario que dio like:", userID.Hex())
+
+	// Enviar notificación solo si el usuario que da like es diferente al autor del post
+	if post.AutorID != userID {
 		utils.CrearNotificacion("like", userID, post.AutorID, "Le dio like a tu post", &postID)
 	} else {
-		log.Println("No se envía notificación de like (es su propio post o error)")
+		log.Println("No se envía notificación de like (usuario es el autor del post)")
 	}
 
 	return c.JSON(http.StatusCreated, echo.Map{"message": "Like registrado"})
