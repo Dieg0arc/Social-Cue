@@ -14,28 +14,42 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// CrearPost maneja la creación de un nuevo post
+// CrearPost maneja la creación de un nuevo post a partir de datos recibidos como JSON.
 func CrearPost(c echo.Context) error {
-	post := new(models.Post)
+	// Estructura auxiliar para parsear el JSON de entrada
+	var body struct {
+		Titulo    string   `json:"titulo"`
+		Contenido string   `json:"contenido"`
+		Tipo      string   `json:"tipo"`
+		Categoria string   `json:"categoria"`
+		Tags      []string `json:"tags"`
+		AutorID   string   `json:"autorId"`
+	}
 
-	post.Titulo = c.FormValue("titulo")
-	post.Contenido = c.FormValue("contenido")
-	post.Tipo = c.FormValue("tipo")
-	post.Categoria = c.FormValue("categoria")
-	post.Tags = c.Request().Form["tags"]
+	// Intentar parsear el cuerpo como JSON
+	if err := c.Bind(&body); err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Error al parsear el cuerpo JSON"})
+	}
 
-	autorID, err := primitive.ObjectIDFromHex(c.FormValue("autorId"))
+	// Validar y convertir el autorId a ObjectID
+	autorID, err := primitive.ObjectIDFromHex(body.AutorID)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "ID de autor inválido"})
 	}
-	post.AutorID = autorID
-	post.ID = primitive.NewObjectID()
-	post.FechaCreado = time.Now()
 
-	if fileURL, err := utils.SubirArchivo(c, "archivo"); err == nil {
-		post.URLArchivo = fileURL
+	// Crear el objeto post con los datos recibidos
+	post := models.Post{
+		ID:          primitive.NewObjectID(),
+		Titulo:      body.Titulo,
+		Contenido:   body.Contenido,
+		Tipo:        body.Tipo,
+		Categoria:   body.Categoria,
+		Tags:        body.Tags,
+		AutorID:     autorID,
+		FechaCreado: time.Now(),
 	}
 
+	// Guardar el post en MongoDB
 	collection := config.GetCollection("posts")
 	_, err = collection.InsertOne(context.TODO(), post)
 	if err != nil {
@@ -165,36 +179,60 @@ func ToggleLike(c echo.Context) error {
 	return c.JSON(http.StatusCreated, echo.Map{"message": "Like registrado"})
 }
 
-// CrearComentario agrega un comentario y envía notificación si aplica
+// CrearComentario agrega un comentario a un post y envía una notificación al autor del post si corresponde.
 func CrearComentario(c echo.Context) error {
+	// Obtener el ID del post desde la ruta
 	idParam := c.Param("id")
 	postID, err := primitive.ObjectIDFromHex(idParam)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"message": "ID no válido"})
+		return c.JSON(http.StatusBadRequest, echo.Map{"message": "ID del post inválido"})
 	}
 
-	var comentario models.Comentario
-	if err := c.Bind(&comentario); err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Error al parsear"})
+	// Estructura auxiliar para extraer autorId y contenido desde el JSON
+	var body struct {
+		AutorID   string `json:"autorId"`
+		Contenido string `json:"contenido"`
 	}
 
-	comentario.ID = primitive.NewObjectID()
-	comentario.PostID = postID
-	comentario.Fecha = time.Now()
+	// Parsear el cuerpo de la solicitud
+	if err := c.Bind(&body); err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Error al parsear el cuerpo"})
+	}
 
+	// Validar y convertir autorId a ObjectID
+	autorID, err := primitive.ObjectIDFromHex(body.AutorID)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{"message": "autorId inválido"})
+	}
+
+	// Crear el objeto Comentario con los datos recibidos
+	comentario := models.Comentario{
+		ID:        primitive.NewObjectID(),
+		PostID:    postID,
+		AutorID:   autorID,
+		Contenido: body.Contenido,
+		Fecha:     time.Now(),
+	}
+
+	// Guardar el comentario en la colección
 	collection := config.GetCollection("comentarios")
 	_, err = collection.InsertOne(context.TODO(), comentario)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error al guardar"})
+		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error al guardar el comentario"})
 	}
 
-	// Obtener autor del post para verificar si se debe notificar
+	// Obtener el post original para identificar al autor del post
 	var post models.Post
 	err = config.GetCollection("posts").FindOne(context.TODO(), bson.M{"_id": postID}).Decode(&post)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "No se pudo verificar el autor del post"})
 	}
 
+	// Mostrar logs de depuración
+	log.Println("Autor del comentario:", comentario.AutorID.Hex())
+	log.Println("Autor del post:", post.AutorID.Hex())
+
+	// Enviar notificación solo si el autor del comentario no es el mismo del post
 	if comentario.AutorID != post.AutorID {
 		utils.CrearNotificacion("comentario", comentario.AutorID, post.AutorID, "Comentó tu post", &postID)
 	}
