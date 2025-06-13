@@ -13,9 +13,14 @@
             class="input-field"
           />
         </div>
-        <button type="submit" class="login-button" :disabled="disabled">
-          {{ disabled ? "Espera..." : "Enviar código" }}
-        </button>
+<div class="button-row">
+  <button type="submit" class="login-button" :disabled="disabled">
+    {{ disabled ? "Espera..." : "Enviar código" }}
+  </button>
+  <NuxtLink to="/login" class="login-button">
+    Volver
+  </NuxtLink>
+</div>
       </form>
 
       <p v-if="message" class="info-message">{{ message }}</p>
@@ -72,5 +77,14 @@ const requestReset = async () => {
 .info-message {
   margin-top: 10px;
   text-align: center;
+}
+.button-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.button-row .login-button {
+  flex: 1;
 }
 </style>

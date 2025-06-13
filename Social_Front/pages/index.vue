@@ -10,9 +10,9 @@
           <NuxtLink to="http://localhost:3000/login" class="login-button home-login-button">
             Iniciar sesión
           </NuxtLink>
-          <p class="home-description">
+          <!-- <p class="home-description">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque nec est at libero ultrices suscipit.
-          </p>
+          </p> -->
         </div>
       </div>
     </div>
