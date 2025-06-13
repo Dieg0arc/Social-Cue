@@ -35,7 +35,7 @@ func ConnectDB() {
 
 	// Selecciona la base de datos
 	DB = client.Database("social_cue")
-	fmt.Println("✅ Conexión a MongoDB exitosa")
+	fmt.Println(" Conexión a MongoDB exitosa")
 }
 
 // GetCollection obtiene una colección específica

@@ -1,0 +1,7 @@
+{
+  "build": {
+    "builder": "nixpacks",
+    "buildCommand": "go build -o post-server",
+    "startCommand": "./post-server"
+  }
+}

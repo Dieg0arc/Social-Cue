@@ -1,22 +1,3 @@
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  username: string;
-  role: string;
-  createdAt: string;
-}
-
-export interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
-export interface RegisterData extends LoginCredentials {
-  name: string;
-  username: string;
-}
-
 // types/user.ts
 /**
  * Archivo: user.ts
@@ -30,14 +11,15 @@ export interface RegisterData extends LoginCredentials {
  * Interfaz que define la estructura de un usuario en el sistema
  */
 export interface User {
-  id: string | number; // Identificador único del usuario
+  _id?: string; // ID original de MongoDB (por compatibilidad)
+  id?: string; // ID alternativo mapeado desde _id (usado en frontend)
   username?: string; // Nombre de usuario único
   email: string; // Correo electrónico del usuario
   name?: string; // Para compatibilidad con implementaciones anteriores
   fullName?: string; // Nombre completo del usuario
   role?: "student" | "teacher" | "admin"; // Rol del usuario con valores específicos permitidos
   profilePicture?: string; // URL de la imagen de perfil (opcional)
-  createdAt?: Date; // Fecha de creación de la cuenta
+  createdAt?: string | Date; // Fecha de creación de la cuenta
 }
 
 /**

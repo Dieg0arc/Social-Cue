@@ -15,8 +15,15 @@
           <label for="password">Nueva contraseña</label>
           <input type="password" id="password" v-model="password" required class="input-field" />
         </div>
+      <div class="button-row">
         <button type="submit" class="login-button">Restablecer</button>
+        <NuxtLink to="/login" class="login-button">
+          Volver
+        </NuxtLink>
+      </div>
       </form>
+
+
       <p v-if="message" :class="{'info-message': true, 'error': isError}">
         {{ message }}
       </p>
@@ -70,6 +77,10 @@ const confirmReset = async () => {
     isError.value = true;
   }
 };
+
+const goToLogin = () => {
+  router.push("/login");
+};
 </script>
 
 <style>
@@ -87,5 +98,23 @@ const confirmReset = async () => {
 
 .info-message:not(.error) {
   color: green;
+}
+
+/* Puedes personalizar este estilo si tienes un sistema de clases para botones secundarios */
+.secondary-button {
+  margin-top: 10px;
+  background-color: transparent;
+  color: #007bff;
+  border: 1px solid #007bff;
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.button-row .login-button {
+  flex: 1;
 }
 </style>
