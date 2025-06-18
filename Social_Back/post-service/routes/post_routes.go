@@ -13,10 +13,11 @@ func PostRoutes(e *echo.Echo) {
 	})
 
 	// CRUD de posts
-	e.POST("/posts", controllers.CrearPost)           // Crear post
-	e.GET("/posts", controllers.ObtenerPosts)         // Obtener todos (con filtros)
-	e.GET("/posts/:id", controllers.ObtenerPostPorID) // Obtener uno por ID
-	e.DELETE("/posts/:id", controllers.EliminarPost)  // Eliminar post
+	e.POST("/posts", controllers.CrearPost)   // Crear post
+	e.GET("/posts", controllers.ObtenerPosts) // Obtener todos (con filtros)
+	// e.GET("/posts/:id", controllers.ObtenerPostPorID) // Obtener uno por ID
+	e.GET("/posts/usuario/:id", controllers.ObtenerPostsPorUsuario)
+	e.DELETE("/posts/:id", controllers.EliminarPost) // Eliminar post
 	// Comentarios
 	e.POST("/posts/:id/comments", controllers.CrearComentario)
 	e.GET("/posts/:id/comments", controllers.ObtenerComentarios)

@@ -1,264 +1,322 @@
+<script setup lang="ts">
+definePageMeta({
+  layout: 'authenticated',
+});
+
+import { useAuth } from '~/composables/useAuth';
+import { ref, onMounted } from 'vue';
+
+const { user } = useAuth();
+const { $api, $authApi } = useNuxtApp();
+
+const seguidores = ref([]);
+const seguidos = ref([]);
+const posts = ref([]);
+
+const obtenerRelaciones = async () => {
+  if (!user.value || !user.value._id) return;
+
+  try {
+    const [followsSeguidores, followsSeguidos] = await Promise.all([
+      $api(`/users/${user.value._id}/followers`),
+      $api(`/users/${user.value._id}/following`),
+    ]);
+
+    const detalleSeguidores = await Promise.all(
+      followsSeguidores.map(f => $authApi(`/users/${f.seguidorId}`))
+    );
+
+    const detalleSeguidos = await Promise.all(
+      followsSeguidos.map(f => $authApi(`/users/${f.seguidoId}`))
+    );
+
+    seguidores.value = detalleSeguidores;
+    seguidos.value = detalleSeguidos;
+  } catch (error) {
+    console.error("Error al cargar seguidores/seguidos:", error);
+  }
+};
+
+const obtenerPostsUsuario = async () => {
+  if (!user.value || !user.value._id) return;
+
+  try {
+    const res = await $api(`/posts/usuario/${user.value._id}`);
+    posts.value = res;
+  } catch (error) {
+    console.error("Error al obtener posts:", error);
+  }
+};
+
+onMounted(() => {
+  obtenerRelaciones();
+  obtenerPostsUsuario();
+});
+</script>
+
 <template>
-  <div class="app-layout">
-    <!-- Sidebar de navegación principal -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <img src="/assets/images/OnlyLogo_Tp.png" alt="SocialCue Logo" class="sidebar-logo" />
-        <h1 class="sidebar-title">SocialCue</h1>
+  <div class="profile-page">
+    <!-- PERFIL -->
+    <div class="profile-card">
+      <div class="left-section">
+        <div class="avatar-placeholder">
+          <img
+            :src="user?.profilePicture || '/assets/images/Usuari.png'"
+            alt="Avatar"
+            class="avatar-img"
+          />
+        </div>
+        <div class="user-info">
+          <h2 class="username">{{ user?.username || 'Usuario' }}</h2>
+          <p class="email">{{ user?.email || 'Correo no disponible' }}</p>
+          <span class="role">{{ user?.role || 'Estudiante' }}</span>
+        </div>
       </div>
-      <nav class="sidebar-nav">
-        <ul class="nav-list">
-          <li class="nav-item">
-            <NuxtLink to="/dashboard" class="nav-link">
-              <i class="pi pi-home nav-icon"></i>
-              <span class="nav-text">Inicio</span>
-            </NuxtLink>
-          </li>
-          <li class="nav-item">
-            <NuxtLink to="/profile" class="nav-link">
-              <i class="pi pi-user nav-icon"></i>
-              <span class="nav-text">Perfil</span>
-            </NuxtLink>
-          </li>
-          <li class="nav-item">
-            <NuxtLink to="/explore" class="nav-link">
-              <i class="pi pi-search nav-icon"></i>
-              <span class="nav-text">Explorar</span>
-            </NuxtLink>
+      <div class="right-section">
+        <button class="edit-button">Editar Perfil</button>
+      </div>
+    </div>
+
+    <!-- RELACIONES -->
+    <div class="relations-container">
+      <div class="relation-card">
+        <h3 class="relation-title">Seguidores ({{ seguidores.length }})</h3>
+        <ul class="relation-list">
+          <li
+            v-for="seguidor in seguidores"
+            :key="seguidor._id"
+            class="relation-item"
+          >
+            <img
+              :src="seguidor.profilePicture || '/assets/images/Usuari.png'"
+              class="mini-avatar"
+            />
+            <span class="relation-name">{{ seguidor.username }}</span>
           </li>
         </ul>
-      </nav>
-      <div class="sidebar-footer">
-        <button @click="handleLogout" class="logout-btn">
-          <i class="pi pi-sign-out nav-icon"></i>
-          <span>Cerrar sesión</span>
-        </button>
       </div>
-    </aside>
 
-    <!-- Contenido principal -->
-    <div class="main-container">
-      <header class="app-header">
-        <div class="header-left">
-          <button @click="toggleSidebar" class="collapse-btn-header">
-            <i class="pi pi-align-justify"></i>
-          </button>
-          <h2 class="page-title">Perfil</h2>
-        </div>
-        <div class="header-right">
-          <div class="search-bar">
-            <input type="text" placeholder="Buscar..." class="search-input" />
-            <button class="search-btn">
-              <i class="pi pi-search"></i>
-            </button>
-          </div>
-          <div class="notifications">
-            <button class="notification-btn">
-              <i class="pi pi-bell"></i>
-            </button>
-          </div>
-          <div class="user-profile">
-            <img :src="user?.profilePicture || '/assets/images/Usuari.png'" alt="Foto de perfil" class="user-avatar" />
-            <span class="user-name">{{ user?.username || 'Usuario' }}</span>
-          </div>
-        </div>
-      </header>
-
-      <main class="content-area">
-        <div class="profile-wrapper">
-          <div class="profile-card">
+      <div class="relation-card">
+        <h3 class="relation-title">Siguiendo ({{ seguidos.length }})</h3>
+        <ul class="relation-list">
+          <li
+            v-for="seguido in seguidos"
+            :key="seguido._id"
+            class="relation-item"
+          >
             <img
-              class="profile-avatar"
-              src="/assets/images/Usuari.png"
-              alt="Avatar"
+              :src="seguido.profilePicture || '/assets/images/Usuari.png'"
+              class="mini-avatar"
             />
-            <div class="profile-info">
-              <h2 class="profile-username">{{ user?.username || 'Usuario desconocido' }}</h2>
-              <p class="profile-email">Correo: {{ user?.email }}</p>
-              <p class="profile-id">ID: {{ user?.id }}</p>
-            </div>
-          </div>
-        </div>
-      </main>
+            <span class="relation-name">{{ seguido.username }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- POSTS -->
+    <div class="user-posts-container">
+      <h3 class="section-title">Mis Publicaciones ({{ posts.length }})</h3>
+      <div v-if="posts.length === 0" class="no-posts">No has publicado nada aún.</div>
+      <ul class="posts-list">
+        <li v-for="post in posts" :key="post._id" class="post-item">
+          <h4>{{ post.titulo }}</h4>
+          <p>{{ post.contenido }}</p>
+          <span class="post-fecha">{{ new Date(post.fecha).toLocaleString() }}</span>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue';
-import { useAuth } from '@/composables/useAuth';
-import { useRouter } from 'vue-router';
+<style scoped>
+.profile-page {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-const { user, logout } = useAuth();
-const router = useRouter();
-const sidebarCollapsed = ref(false);
+.profile-card {
+  width: 100%;
+  max-width: 900px;
+  background-color: #101d2e;
+  border-radius: 0.75rem;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+}
 
-const toggleSidebar = () => {
-  sidebarCollapsed.value = !sidebarCollapsed.value;
-};
+.left-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 
-const handleLogout = async () => {
-  await logout();
-  router.push('/login');
-};
-</script>
+.avatar-placeholder {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  <style scoped>
-  .app-layout {
-    display: flex;
-    background-color: #162A42; /* fondo oscuro */
-    color: #fff;
-    min-height: 100vh;
-  }
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-  .sidebar {
-    width: 240px;
-    background-color: #0A1625;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 1rem;
-  }
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 
-  .sidebar-logo {
-    width: 40px;
-    height: 40px;
-  }
+.username {
+  color: white;
+  font-size: 1.2rem;
+  margin: 0;
+}
 
-  .sidebar-title {
-    font-size: 1.2rem;
-    margin-left: 0.5rem;
-  }
+.email {
+  font-size: 0.9rem;
+  color: #ccc;
+  margin: 0;
+}
 
-  .nav-list {
-    list-style: none;
-    padding: 0;
-  }
+.role {
+  font-size: 0.8rem;
+  background-color: #045a8d;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-block;
+  width: fit-content;
+}
 
-  .nav-item {
-    margin-bottom: 1rem;
-  }
+.right-section {
+  display: flex;
+  align-items: center;
+}
 
-  .nav-link {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #cbd5e1;
-    text-decoration: none;
-  }
+.edit-button {
+  background-color: #00aaff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  box-shadow: 0 0 10px #00aaff80;
+}
 
-  .logout-btn {
-    background: none;
-    border: none;
-    color: #f87171;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
+.edit-button:hover {
+  background-color: #008fcc;
+}
 
-  .main-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
+.relations-container {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 900px;
+}
 
-  .app-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background-color: #0A1625;
-    border-bottom: 1px solid #334155;
-  }
+.relation-card {
+  background-color: #0d1b2a;
+  padding: 1.2rem;
+  border-radius: 0.75rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
 
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
+.relation-title {
+  color: #fff;
+  margin-bottom: 0.8rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
 
-  .page-title {
-    font-size: 1.25rem;
-    font-weight: bold;
-  }
+.relation-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
 
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
+.relation-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0;
+  color: #ddd;
+}
 
-  .search-bar {
-    display: flex;
-    align-items: center;
-    background-color: #334155;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.375rem;
-  }
+.mini-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
 
-  .search-input {
-    background: transparent;
-    border: none;
-    color: white;
-    outline: none;
-  }
+.relation-name {
+  font-size: 0.95rem;
+}
 
-  .user-profile {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
+.user-posts-container {
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 900px;
+  background-color: #0f2238;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
 
-  .user-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 9999px;
-  }
+.section-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 1rem;
+}
 
-  .content-area {
-    flex: 1;
-    padding: 2rem;
-    background-color: #162A42;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+.no-posts {
+  color: #ccc;
+  font-style: italic;
+}
 
-  .profile-card {
-    background-color: #0A1625;
-    padding: 2rem 80rem;
-    border-radius: 1rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-    text-align: center;
-    color: #ffffff;
-    max-width: 500px;
-    width: 100%;
-  }
+.posts-list {
+  list-style: none;
+  padding: 0;
+}
 
-  .profile-avatar {
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    margin-bottom: 1rem;
-    object-fit: cover;
-    border: 2px solid #3b82f6;
-  }
+.post-item {
+  background-color: #142b43;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  color: white;
+}
 
-  .profile-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+.post-item h4 {
+  margin: 0 0 0.5rem 0;
+}
 
-  .profile-username {
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
+.post-item p {
+  margin: 0 0 0.5rem 0;
+}
 
-  .profile-email,
-  .profile-id {
-    font-size: 0.95rem;
-    color: #cbd5e1;
-  }
-  </style>
+.post-fecha {
+  font-size: 0.75rem;
+  color: #aaa;
+}
+</style>
