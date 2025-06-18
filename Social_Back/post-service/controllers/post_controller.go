@@ -91,22 +91,27 @@ func ObtenerPosts(c echo.Context) error {
 	return c.JSON(http.StatusOK, posts)
 }
 
-// ObtenerPostPorID devuelve un post por su ID
-func ObtenerPostPorID(c echo.Context) error {
-	idParam := c.Param("id")
-	id, err := primitive.ObjectIDFromHex(idParam)
+// ObtenerPostsPorUsuario devuelve todos los posts creados por un usuario específico
+func ObtenerPostsPorUsuario(c echo.Context) error {
+	usuarioIDParam := c.Param("id")
+	usuarioID, err := primitive.ObjectIDFromHex(usuarioIDParam)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"message": "ID no válido"})
+		return c.JSON(http.StatusBadRequest, echo.Map{"message": "ID de usuario inválido"})
 	}
 
-	var post models.Post
 	collection := config.GetCollection("posts")
-	err = collection.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&post)
+	cursor, err := collection.Find(context.TODO(), bson.M{"autorId": usuarioID})
 	if err != nil {
-		return c.JSON(http.StatusNotFound, echo.Map{"message": "Post no encontrado"})
+		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error al buscar posts del usuario"})
+	}
+	defer cursor.Close(context.TODO())
+
+	var posts []models.Post
+	if err := cursor.All(context.TODO(), &posts); err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error al leer posts"})
 	}
 
-	return c.JSON(http.StatusOK, post)
+	return c.JSON(http.StatusOK, posts)
 }
 
 // EliminarPost elimina un post por su ID

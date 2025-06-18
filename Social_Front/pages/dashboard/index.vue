@@ -9,28 +9,6 @@
   <div class="dashboard-container">
     <!-- Contenedor principal del feed de posts -->
     <div class="feed-container">
-      <!-- Sección de historias (simulado) -->
-<div class="stories-container">
-  <div class="stories-header">
-    <h3>Historias</h3>
-    <button class="view-all-btn">Ver todas</button>
-  </div>
-  <div class="stories-list">
-    <div 
-      v-for="story in stories" 
-      :key="story.id" 
-      class="story-item"
-      :class="{ 'has-new': story.hasNew }"
-    >
-      <div class="story-avatar-container">
-        <img :src="story.avatar" :alt="story.username" class="story-avatar" />
-      </div>
-      <span class="story-username">{{ story.username }}</span>
-    </div>
-  </div>
-</div>
-
-
       <!-- Tarjeta de creación de post -->
       <div class="create-post-card">
         <div class="create-post-header">
@@ -61,7 +39,6 @@
           </button>
         </div>
       </div>
-
       <!-- Lista de posts -->
       <div class="posts-list" v-if="posts.length > 0">
         <PostCard 
@@ -78,12 +55,12 @@
           <p>Cargando más publicaciones...</p>
         </div>
       </div>
+      <!-- Mensaje si no hay publicaciones -->
       <div v-else class="empty-state">
         <p>No hay publicaciones para mostrar</p>
         <button class="find-friends-btn">Encuentra amigos para seguir</button>
       </div>
     </div>
-
     <!-- Sidebar de sugerencias (solo visible en pantallas grandes) -->
     <div class="suggestions-sidebar">
       <!-- Perfil del usuario -->
@@ -131,7 +108,6 @@
         <p class="copyright">© 2025 SocialCue</p>
       </div>
     </div>
-
     <!-- Modal para crear post (simulado) -->
     <div v-if="showCreatePostModal" class="create-post-modal">
       <div class="modal-overlay" @click="showCreatePostModal = false"></div>
