@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// estas son las rutas que se utilizan
+// las rutas utilizadas de cominucacion
 func SetupRoutes(e *echo.Echo, cfg *config.Config) {
 	auth := e.Group("/api/auth")
 	auth.POST("/login", handlers.LoginHandler(cfg))
