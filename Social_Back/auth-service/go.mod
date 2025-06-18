@@ -1,9 +1,12 @@
 module authservice
 
-go 1.22
+go 1.23.0
+
+toolchain go1.24.2
 
 require (
 	github.com/golang-jwt/jwt/v4 v4.5.2
+	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.13.3
 	go.mongodb.org/mongo-driver v1.13.1
 	golang.org/x/crypto v0.37.0
@@ -11,7 +14,6 @@ require (
 
 require (
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/joho/godotenv v1.5.1
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
