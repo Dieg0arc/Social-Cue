@@ -1,7 +1,5 @@
 {
   "build": {
-    "builder": "nixpacks",
-    "buildCommand": "go build -o auth-server",
-    "startCommand": "./auth-server"
+    "builder": "docker"
   }
 }
